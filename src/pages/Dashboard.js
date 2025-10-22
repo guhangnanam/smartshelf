@@ -3,6 +3,7 @@ import { supabase } from "../utils/supabaseClient"
 
 export default function Dashboard({ session }) {
 
+    // State to hold containers
     const [containers, setContainers] = React.useState([])
 
     // Fetch containers
@@ -35,6 +36,8 @@ export default function Dashboard({ session }) {
         await supabase.auth.signOut()
     }
 
+
+    // temporary styles for simplicity (Use Tailwind later)
     return (
         <div
             style={{
@@ -51,15 +54,24 @@ export default function Dashboard({ session }) {
 
             >
             <h1>Smart Shelf Dashboard</h1>
-            <p>
-                Signed in as: <b>{session.user.id}</b>
+            <p
+            style={{
+                position: "absolute",
+                top: "5px",
+                left: "10px",
+                padding: "10px"
+
+            }}>
+                Signed in as: <b>{session.user.email}</b>
             </p>
 
             <button
                 onClick={handleSignOut}
                 style={{
-                marginTop: "20px",
-                padding: "10px 25px",
+                position: "absolute",
+                top: "60px",
+                left: "20px",
+                padding: "10px",
                 borderRadius: "8px",
                 backgroundColor: "#333",
                 color: "#fff",
