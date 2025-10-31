@@ -46,6 +46,8 @@ export default function AddContainerModal({ isOpen, onClose, userId }) {
             console.error("Unexpected error:", err);
             alert("Failed to add container");
         }
+
+        handleClose();
     };
 
     return (
