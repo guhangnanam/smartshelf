@@ -10,6 +10,8 @@ export default function AddFoodModal({isOpen, onClose, onAdded, userId}) {
     const [currentWeight, setCurrentWeight] = React.useState("");
     const [maxWeight, setMaxWeight] = React.useState("");
     const [useApi, setUseApi] = React.useState(false);
+    // set to default for now remember to change later
+    const [deviceId, setDeviceId] = React.useState("ShelfESP32_1");
 
 
     useEffect(() => {
@@ -67,11 +69,12 @@ export default function AddFoodModal({isOpen, onClose, onAdded, userId}) {
                     calories_per_gram: parseFloat(caloriesPerGram),
                     current_weight: parseFloat(currentWeight),
                     max_weight: parseFloat(maxWeight),
+                    device_id: deviceId,
                 },
             ]);
 
             if (error) {
-                alert("❌ Insert failed: " + error.message);
+                alert("Insert failed: " + error.message);
                 console.error("Supabase insert error:", error);
                 return;
             }
@@ -144,6 +147,20 @@ export default function AddFoodModal({isOpen, onClose, onAdded, userId}) {
                                 {container.name}
                             </option>
                         ))}
+                    </select>
+
+                    {/* Device ID Dropdown */}
+                    <select
+                        value={deviceId}
+                        onChange={(e) => setDeviceId(e.target.value)}
+                        style={{
+                            padding: "10px",
+                            borderRadius: "6px",
+                            border: "1px solid #ccc",
+                        }}
+                    >
+                        <option value="ShelfESP32_1">ShelfESP32_1</option>
+                        {/* add more ESP32s here later */}
                     </select>
 
                     {/* Toggle: API Search vs Manual */}
