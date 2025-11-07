@@ -1,8 +1,8 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-// Target MAC address (Arduino/ESP32 you want to send to)
-uint8_t targetMac[] = {0xAC, 0x15, 0x18, 0xF2, 0x7C, 0x70};
+// Target MAC address (Arduino/ESP32 you want to send to) Jason's ESP32 gets the message. Upload this to Guhan's ESP32
+uint8_t targetMac[] = {0xAC, 0x15, 0x18, 0xF2, 0x7C, 0x70}; 
 
 // Callback when data is sent
 void onDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
