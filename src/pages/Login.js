@@ -1,43 +1,55 @@
+import React, { useState, useEffect } from "react"
 import { Auth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { supabase } from "../utils/supabaseClient"
+import "../styles/login.css"
 
 export default function LoginPage() {
-    return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100vh",
-                backgroundColor: "#f5f5f5",
-            }}
-        >
-            <div
-                style={{
-                    width: "400px",
-                    backgroundColor: "white",
-                    padding: "40px",
-                    borderRadius: "12px",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                }}
-            >
-                <h2
-                    style={{
-                        textAlign: "center",
-                        marginBottom: "20px",
-                        fontWeight: "600",
-                    }}
-                >
-                    Smart Shelf Login
-                </h2>
+    const [displayedText, setDisplayedText] = useState("")
+    const fullText = "Smart Shelf"
+    const typingSpeed = 100
 
-                <Auth
-                    supabaseClient={supabase}
-                    appearance={{ theme: ThemeSupa }}
-                    theme="default"
-                    providers={[]} // email/password only
-                />
+    useEffect(() => {
+        let currentIndex = 0
+        const interval = setInterval(() => {
+            if (currentIndex < fullText.length) {
+                setDisplayedText(fullText.slice(0, currentIndex + 1))
+                currentIndex++
+            } else {
+                clearInterval(interval)
+            }
+        }, typingSpeed)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    return (
+        <div className="login-container">
+            {/* Animated background elements */}
+            <div className="floating-blob blob-1"></div>
+            <div className="floating-blob blob-2"></div>
+            <div className="floating-blob blob-3"></div>
+            
+            <div className="login-card">
+                {/* Decorative circles */}
+                <div className="accent-circle circle-1"></div>
+                <div className="accent-circle circle-2"></div>
+                
+                <div className="login-content">
+                    <h1 className="login-title">
+                        {displayedText}
+                        <span className="typing-cursor"></span>
+                    </h1>
+
+                    <div className="auth-wrapper">
+                        <Auth
+                            supabaseClient={supabase}
+                            appearance={{ theme: ThemeSupa }}
+                            theme="default"
+                            providers={[]} // email/password only
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     )

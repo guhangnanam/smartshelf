@@ -1,0 +1,349 @@
+/* Pastel Color Palette */
+:root {
+  --pastel-pink: #FFB6D9;
+  --pastel-purple: #D9B6FF;
+  --pastel-blue: #B6E3FF;
+  --pastel-mint: #B6FFD9;
+  --pastel-peach: #FFD9B6;
+  --pastel-lavender: #E8D5FF;
+  --pastel-sky: #D5E8FF;
+  --white: #FFFFFF;
+  --text-dark: #4A4A4A;
+}
+
+/* Main container with gradient background */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--pastel-lavender) 0%, var(--pastel-sky) 50%, var(--pastel-mint) 100%);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Floating blob animations */
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-20px, -60px) scale(0.9);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(-40px, 20px) scale(1.05);
+    opacity: 0.35;
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(-50px, 50px) scale(1.15);
+    opacity: 0.35;
+  }
+  66% {
+    transform: translate(50px, -40px) scale(0.95);
+    opacity: 0.25;
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(40px, 60px) scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+.floating-blob {
+  position: absolute;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.blob-1 {
+  width: 200px;
+  height: 200px;
+  background: var(--pastel-pink);
+  top: -50px;
+  left: -50px;
+  animation: float1 20s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 150px;
+  height: 150px;
+  background: var(--pastel-purple);
+  bottom: -30px;
+  right: -30px;
+  animation: float2 25s ease-in-out infinite;
+}
+
+.blob-3 {
+  width: 120px;
+  height: 120px;
+  background: var(--pastel-peach);
+  top: 50%;
+  left: -60px;
+  animation: float3 30s ease-in-out infinite;
+}
+
+/* Login card */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  width: 90%;
+  max-width: 450px;
+  padding: 60px 45px;
+  border-radius: 30px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+  animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 182, 217, 0.2);
+  transition: all 0.3s ease;
+}
+
+.login-card:hover {
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-5px);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Accent circles */
+.accent-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.circle-1 {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-peach));
+  top: -60px;
+  right: -60px;
+  opacity: 0.15;
+  animation: rotate 15s linear infinite;
+}
+
+.circle-2 {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-mint));
+  bottom: -40px;
+  left: -40px;
+  opacity: 0.1;
+  animation: rotate 20s linear infinite reverse;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Login content */
+.login-content {
+  position: relative;
+  z-index: 2;
+}
+
+.login-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 8px 0;
+  text-align: center;
+  background: linear-gradient(135deg, #FF85B5 0%, #E67AA5 50%, #C45A95 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeIn 0.8s ease-out 0.1s both;
+  text-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 3rem;
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: #999;
+  text-align: center;
+  margin: 0 0 35px 0;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 2.2rem;
+  background: linear-gradient(135deg, #FF85B5 0%, #E67AA5 50%, #C45A95 100%);
+  border-radius: 2px;
+  animation: blink 0.7s infinite;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Auth wrapper for form styling */
+.auth-wrapper {
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+/* Override Supabase auth UI styling */
+.auth-wrapper :global(.supabase-auth-ui) {
+  --colors-inputBackground: rgba(255, 255, 255, 0.8);
+  --colors-inputBorder: var(--pastel-lavender);
+  --colors-inputText: var(--text-dark);
+  --colors-inputPlaceholder: #bbb;
+}
+
+.auth-wrapper :global(input) {
+  background-color: rgba(240, 240, 245, 0.8) !important;
+  border: 2px solid var(--pastel-lavender) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  font-size: 1rem !important;
+  color: var(--text-dark) !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-wrapper :global(input:focus) {
+  outline: none !important;
+  border-color: var(--pastel-blue) !important;
+  box-shadow: 0 0 0 3px rgba(181, 227, 255, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.auth-wrapper :global(input::placeholder) {
+  color: #ccc !important;
+}
+
+.auth-wrapper :global(button) {
+  background: linear-gradient(135deg, #FF85B5 0%, #FF6B9D 50%, #D9B6FF 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.45) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.auth-wrapper :global(button::before) {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  transform: translate(-50%, -50%) !important;
+  transition: width 0.6s, height 0.6s !important;
+}
+
+.auth-wrapper :global(button:active::before) {
+  width: 300px !important;
+  height: 300px !important;
+}
+
+.auth-wrapper :global(button:hover) {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 35px rgba(255, 107, 157, 0.6), 0 0 20px rgba(255, 107, 157, 0.25) !important;
+  background: linear-gradient(135deg, #FF6B9D 0%, #E55A8B 50%, #C9A0FF 100%) !important;
+}
+
+.auth-wrapper :global(button:active) {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 15px rgba(255, 107, 157, 0.5) !important;
+}
+
+.auth-wrapper :global(a) {
+  color: var(--pastel-purple) !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-wrapper :global(a:hover) {
+  color: var(--pastel-pink) !important;
+  text-decoration: underline !important;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .login-card {
+    width: 90%;
+    padding: 40px 25px;
+    margin: 20px;
+  }
+
+  .login-title {
+    font-size: 2rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .blob-1,
+  .blob-2,
+  .blob-3 {
+    filter: blur(50px);
+  }
+}
