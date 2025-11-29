@@ -1,36 +1,99 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <ArduinoJson.h>
+#include "HX711.h"
 
-// Device id for this specific shelf`
-const char* DEVICE_ID = "ShelfESP32_1"; 
+// ---------------- CONFIG ----------------
+const char* DEVICE_ID = "ShelfESP32_1";   // Must match the device_id in Supabase
+uint8_t receiverMac[] = {0x04, 0x83, 0x08, 0x76, 0x75, 0x00};  // Central ESP32 MAC
 
-// change later temp!!!!
-float currentWeight = 0.0;               
+#define MAX_WEIGHT 10000
+#define DOUT_1 4
+#define CLK_1 5
+#define DOUT_2 26
+#define CLK_2 27
 
-// Central ESP32 MAC Address (Receiver)
-uint8_t receiverMac[] = {0xAC, 0x15, 0x18, 0xF2, 0x7C, 0x70};
+// Calibration values
+float calibration_factor_1 = 397.4;
+float calibration_factor_2 = 330.0;
+long zero_offset_1 = -484800;
+long zero_offset_2 = 85000;
+
+// HX711 scale objects
+HX711 scale_1, scale_2;
+
+// Global weight variable
+float GLOBAL_WEIGHT = 0.0;
+
+// Transmission interval (ms)
+unsigned long previousMillis = 0;
+const long interval = 2000;  // every 2 seconds
 // ----------------------------------------
 
 
-// Callback when data is sent
-void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+// ---------- Scale Functions -------------
+void setupScales() {
+  scale_1.begin(DOUT_1, CLK_1);
+  scale_2.begin(DOUT_2, CLK_2);
+}
+
+void updateWeight(float scale_weight_1, float scale_weight_2) {
+  if (scale_weight_1 > MAX_WEIGHT && scale_weight_2 > MAX_WEIGHT) {
+    GLOBAL_WEIGHT = 0;
+    return;
+  }
+  if (scale_weight_1 > MAX_WEIGHT) {
+    GLOBAL_WEIGHT = scale_weight_2;
+    return;
+  }
+  if (scale_weight_2 > MAX_WEIGHT) {
+    GLOBAL_WEIGHT = scale_weight_1;
+    return;
+  }
+  // Average the two scales (negated if required by your wiring)
+  GLOBAL_WEIGHT = -((scale_weight_1 + scale_weight_2) / 2);
+}
+
+void updateWeightOne(float scale_weight_1) {
+  GLOBAL_WEIGHT = -scale_weight_1;
+}
+
+float getCombinedWeight() {
+  long reading_1 = scale_1.read_average(10);
+  float weight_1 = (reading_1 + zero_offset_1) / calibration_factor_1;
+
+  // Optional second scale
+  // long reading_2 = scale_2.read_average(10);
+  // float weight_2 = (reading_2 - zero_offset_2) / calibration_factor_2;
+  // updateWeight(weight_1, weight_2);
+
+  updateWeightOne(weight_1);
+  return GLOBAL_WEIGHT;
+}
+// ----------------------------------------
+
+
+// ---------- ESP-NOW Functions ------------
+// New send callback signature for ESP-IDF v5+
+void onDataSent(const wifi_tx_info_t *info, esp_now_send_status_t status) {
   Serial.print("Send Status: ");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Success" : "Fail");
+
+  if (info != nullptr) {
+    char macStr[18];
+    snprintf(macStr, sizeof(macStr),
+             "%02X:%02X:%02X:%02X:%02X:%02X",
+             info->des_addr[0], info->des_addr[1], info->des_addr[2],
+             info->des_addr[3], info->des_addr[4], info->des_addr[5]);
+    Serial.print("Sent to: ");
+    Serial.println(macStr);
+  }
 }
 
 
 
-float getSensorWeight() {
-  // Fill in with Gabriels code
-}
-
-
-// Send JSON message via ESP-NOW
-void sendWeightUpdate() {
-  currentWeight = getSensorWeight();
-
-  // Create JSON object
+void sendWeightUpdate(float currentWeight) {
+  // Build JSON payload
   StaticJsonDocument<128> doc;
   doc["device_id"] = DEVICE_ID;
   doc["current_weight"] = currentWeight;
@@ -38,7 +101,7 @@ void sendWeightUpdate() {
   char jsonBuffer[128];
   size_t len = serializeJson(doc, jsonBuffer);
 
-  // Send packet
+  // Send data
   esp_err_t result = esp_now_send(receiverMac, (uint8_t *)jsonBuffer, len);
 
   if (result == ESP_OK) {
@@ -49,14 +112,17 @@ void sendWeightUpdate() {
     Serial.println(result);
   }
 }
+// ----------------------------------------
 
 
-// Setup function
+// ---------- Setup & Loop ------------
 void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  // Initialize Wi-Fi in Station mode
+  setupScales();
+
+  // Initialize Wi-Fi in station mode
   WiFi.mode(WIFI_STA);
   Serial.println("WiFi set to STA mode");
 
@@ -80,13 +146,22 @@ void setup() {
     return;
   }
 
-  Serial.println("ESP-NOW setup complete. Starting transmission...");
+  Serial.println("ESP-NOW setup complete. Starting weight transmission...");
 }
 
 
-// Main loop
 void loop() {
-  sendWeightUpdate();
-  delay(2000); // Send every 2 seconds
-}
+  unsigned long currentMillis = millis();
 
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+    float weight = getCombinedWeight();
+
+    Serial.print("Weight: ");
+    Serial.print(weight, 2);
+    Serial.println(" g");
+
+    sendWeightUpdate(weight);
+  }
+}
