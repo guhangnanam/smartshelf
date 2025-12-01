@@ -76,19 +76,6 @@ Two-database model:
 
 ---
 
-## 🔌 Firebase RTDB Structure
-
-/Sensor/
-LED1: 0/1
-LED2: 0/1
-switch: true/false
-currentWeight: float
-voltage: float
-angle: int
-
-
----
-
 ## 🛠️ Tech Stack
 
 ### **Frontend**
@@ -118,11 +105,15 @@ angle: int
 ```bash
 git clone <your-repo-url>
 cd smart-shelf
+```
 
 ### **2. Install dependencies**
+```bash
 npm install
+```
 
 ### **3. Add environment variables**
+```bash
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_anon_key
 
@@ -133,11 +124,15 @@ REACT_APP_FIREBASE_PROJECT_ID=...
 REACT_APP_FIREBASE_STORAGE_BUCKET=...
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
 REACT_APP_FIREBASE_APP_ID=...
+```
 
 ### **4. Start Development server**
+```bash
 npm start
+```
 
 ### **5. Connect your ESP32 Devices**
+```bash
 Flash each ESP32 with your firmware so it:
 
 Connects to WiFi
@@ -145,6 +140,7 @@ Connects to WiFi
 Sends weight/LED/servo/switch data to Firebase
 
 Listens for state updates
+```
 
 ## 🧪 Testing Checklist
 
