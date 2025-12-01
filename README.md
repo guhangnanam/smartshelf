@@ -103,8 +103,8 @@ Two-database model:
 
 ### **1. Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd smart-shelf
+git clone https://github.com/guhangnanam/smartshelf.git
+cd smartshelf
 ```
 
 ### **2. Install dependencies**
