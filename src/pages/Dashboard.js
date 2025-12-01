@@ -35,6 +35,11 @@ export default function Dashboard({ session }) {
             .select(`
         id,
         food_name,
+        calories_per_serving,
+        serving_size_grams,
+        protein_per_serving,
+        fat_per_serving,
+        carbs_per_serving,
         calories_per_gram,
         current_weight,
         max_weight,
