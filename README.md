@@ -78,6 +78,96 @@ Two-database model:
 
 ## 🔌 Firebase RTDB Structure
 
+/Sensor/
+LED1: 0/1
+LED2: 0/1
+switch: true/false
+currentWeight: float
+voltage: float
+angle: int
 
-## 🏗️ System Architecture
+
+---
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+- React  
+- Supabase Auth  
+- Context API  
+- Custom modal components  
+- Tailored CSS  
+
+### **Backend / Databases**
+- Supabase (PostgreSQL)  
+- Firebase Realtime Database  
+- Row Level Security policies  
+
+### **Hardware**
+- ESP32  
+- HX711 load cell amplifier  
+- Load cells  
+- Servo motors  
+- LEDs, push buttons  
+
+---
+
+## ▶️ Running the Project Locally
+
+### **1. Clone the repository**
+```bash
+git clone <your-repo-url>
+cd smart-shelf
+
+### **2. Install dependencies**
+npm install
+
+### **3. Add environment variables**
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_anon_key
+
+REACT_APP_FIREBASE_API_KEY=...
+REACT_APP_FIREBASE_AUTH_DOMAIN=...
+REACT_APP_FIREBASE_DATABASE_URL=...
+REACT_APP_FIREBASE_PROJECT_ID=...
+REACT_APP_FIREBASE_STORAGE_BUCKET=...
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
+REACT_APP_FIREBASE_APP_ID=...
+
+### **4. Start Development server**
+npm start
+
+### **5. Connect your ESP32 Devices**
+Flash each ESP32 with your firmware so it:
+
+Connects to WiFi
+
+Sends weight/LED/servo/switch data to Firebase
+
+Listens for state updates
+
+## 🧪 Testing Checklist
+
+- [x] Add Container works  
+- [x] Add Food works  
+- [x] Edit Food works  
+- [x] Real-time weight updates correctly  
+- [x] Modals open/close and reset state properly  
+- [x] RLS allows correct user-scoped inserts/updates  
+- [x] Login/logout works as expected  
+- [x] Firebase sensor updates appear in the dashboard  
+- [x] No console or network errors during normal usage  
+
+---
+
+## 📝 Future Improvements
+
+- Historical usage graphs for each container  
+- Daily calorie and macro consumption tracking  
+- Automatic grocery list generation based on weight trends  
+- Predictive consumption estimation using ML  
+- Native mobile app (iOS/Android)  
+- OTA firmware updates for ESP32 devices  
+- Additional UI/UX refinements for mobile and desktop  
+
 
