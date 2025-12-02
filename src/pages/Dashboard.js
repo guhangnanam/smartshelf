@@ -9,7 +9,7 @@ import "../styles/dashboard.css"
 import "../styles/modal.css"
 import "../styles/skeleton.css"
 
-export default function Dashboard({ session }) {
+export default function Dashboard({ session, navigate }) {
 
     // Modal visibility states
     const [showContainerModal, setShowContainerModal] = React.useState(false);
@@ -133,6 +133,9 @@ export default function Dashboard({ session }) {
                     <p className="user-info">Signed in as: <b>{session.user.email}</b></p>
                 </div>
                 <div className="header-buttons">
+                    <button className="sign-out-btn" onClick={() => navigate("consumption")}>
+                        Macro Tracking
+                    </button>
                     <button className="feedback-btn" onClick={() => setShowFeedbackModal(true)} title="Send feedback">
                         Feedback
                     </button>

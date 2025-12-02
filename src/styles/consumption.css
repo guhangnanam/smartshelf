@@ -1,0 +1,99 @@
+.macro-summary-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1000px;
+    margin: 24px auto 40px auto;
+}
+
+.macro-card {
+    flex: 1;
+    min-width: 220px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 18px 22px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+
+.timeline-section {
+    margin-top: 40px;
+}
+
+.timeline-section h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(255,255,255,0.35);
+    backdrop-filter: blur(8px);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.timeline-time {
+    font-weight: bold;
+    font-size: 1.2rem;
+    min-width: 80px;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.timeline-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.date-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+}
+
+.date-btn {
+    background: rgba(255,255,255,0.4);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+}
+
+.date-btn:hover {
+    background: rgba(255,255,255,0.6);
+}
