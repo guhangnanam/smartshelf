@@ -1,70 +1,169 @@
-# Getting Started with Create React App
+# Smart Shelf – IoT Inventory & Nutrition Tracking System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Smart Shelf is an IoT-powered pantry monitoring system that tracks the weight of food containers in real time, logs inventory changes, and provides nutritional insights such as calorie consumption, macros, and restock alerts. The system integrates **ESP32 nodes**, **Firebase Realtime Database**, **Supabase (PostgreSQL)**, and a **React frontend** to deliver a seamless smart-kitchen experience.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+### **IoT Hardware (ESP32)**
+- Reads container weight via load cells & HX711 modules  
+- Pushes live data (weights, LED states, switch values, etc.) to Firebase RTDB  
+- Supports multiple ESP32 nodes (one per shelf or group)  
+- Remote control of LEDs, servos, and peripherals through the cloud  
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### **Backend / Cloud**
+- **Firebase Realtime Database** for live sensor streams  
+- **Supabase PostgreSQL** for persistent container, shelf, and food metadata  
+- Row Level Security (RLS) for user-scoped access  
+- Insert/update APIs for adding and editing containers and foods  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### **Frontend (React + Supabase Auth)**
+- Secure login & session handling  
+- Dashboard showing:
+  - Containers  
+  - Associated shelf items  
+  - Real-time weight updates  
+- Add Food modal  
+- Add Container modal  
+- Edit Food modal  
+- Feedback modal  
+- Automatic linking of containers → devices  
 
-### `npm test`
+### **Planned Features**
+- Calorie tracking page  
+- Macro tracking by day  
+- Low-stock notifications  
+- Mobile UX redesign  
+- Container setup wizard  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
+## 🏗️ System Architecture
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Two-database model:
+- **Firebase RTDB:** real-time sensor events (weight, LED states, switch, servo angle)  
+- **Supabase:** structured, persistent storage for foods & containers  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📦 Database Structure
 
-### `npm run eject`
+### **Supabase Tables**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### `containers`
+| Column         | Type | Description |
+|----------------|------|-------------|
+| id             | uuid | Primary Key |
+| name           | text | Label for the container |
+| max_weight     | float | Weight when full |
+| tare_weight    | float | Weight when empty |
+| deviceId       | uuid | ESP32 device this container belongs to |
+| user_id        | uuid | Foreign key → auth.users |
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### `shelf_items`
+| Column               | Type | Description |
+|----------------------|------|-------------|
+| id                   | uuid | Primary Key |
+| container_id         | uuid | Foreign key → containers |
+| name                 | text | Food name |
+| calories_per_serving | float | Calories per serving |
+| protein              | float | Protein (g) |
+| carbs                | float | Carbs (g) |
+| fats                 | float | Fats (g) |
+| serving_size         | float | Grams per serving |
+| created_at           | timestamp | Insert timestamp |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Tech Stack
 
-## Learn More
+### **Frontend**
+- React  
+- Supabase Auth  
+- Context API  
+- Custom modal components  
+- Tailored CSS  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### **Backend / Databases**
+- Supabase (PostgreSQL)  
+- Firebase Realtime Database  
+- Row Level Security policies  
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### **Hardware**
+- ESP32  
+- HX711 load cell amplifier  
+- Load cells  
+- Servo motors  
+- LEDs, push buttons  
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ▶️ Running the Project Locally
 
-### Analyzing the Bundle Size
+### **1. Clone the repository**
+```bash
+git clone https://github.com/guhangnanam/smartshelf.git
+cd smartshelf
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### **2. Install dependencies**
+```bash
+npm install
+```
 
-### Making a Progressive Web App
+### **3. Add environment variables**
+```bash
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_anon_key
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+REACT_APP_FIREBASE_API_KEY=...
+REACT_APP_FIREBASE_AUTH_DOMAIN=...
+REACT_APP_FIREBASE_DATABASE_URL=...
+REACT_APP_FIREBASE_PROJECT_ID=...
+REACT_APP_FIREBASE_STORAGE_BUCKET=...
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
+REACT_APP_FIREBASE_APP_ID=...
+```
 
-### Advanced Configuration
+### **4. Start Development server**
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### **5. Connect your ESP32 Devices**
+```bash
+Flash each ESP32 with your firmware so it:
 
-### Deployment
+Connects to WiFi
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Sends weight/LED/servo/switch data to Firebase
 
-### `npm run build` fails to minify
+Listens for state updates
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🧪 Testing Checklist
+
+- [x] Add Container works  
+- [x] Add Food works  
+- [x] Edit Food works  
+- [x] Real-time weight updates correctly  
+- [x] Modals open/close and reset state properly  
+- [x] RLS allows correct user-scoped inserts/updates  
+- [x] Login/logout works as expected  
+- [x] Firebase sensor updates appear in the dashboard  
+- [x] No console or network errors during normal usage  
+
+---
+
+## 📝 Future Improvements
+
+- Historical usage graphs for each container  
+- Daily calorie and macro consumption tracking  
+- Automatic grocery list generation based on weight trends  
+- Predictive consumption estimation using ML  
+- Native mobile app (iOS/Android)  
+- OTA firmware updates for ESP32 devices  
+- Additional UI/UX refinements for mobile and desktop  
+
+
