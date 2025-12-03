@@ -19,6 +19,7 @@ export default function Dashboard({ session, navigate }) {
     const [showEditModal, setShowEditModal] = React.useState(false);
     const [editingItem, setEditingItem] = React.useState(null);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [lcdUnit, setLcdUnit] = React.useState("g");
 
     // Data state for containers and items
     const [shelfItems, setShelfItems] = React.useState([]);
@@ -60,7 +61,7 @@ export default function Dashboard({ session, navigate }) {
         const userId = session.user.id;
         const { data, error } = await supabase
             .from("containers")
-            .select("id, name")
+            .select("id, name, empty_weight")
             .eq("user_id", userId);
 
         if (error) console.error("Error fetching containers:", error);
@@ -118,6 +119,31 @@ export default function Dashboard({ session, navigate }) {
         setShowFoodModal(true);
     }
 
+    const handleToggleLCDUnits = async () => {
+        const userId = session.user.id;
+        const newMode = lcdUnit === "g" ? "oz" : "g";
+
+        setLcdUnit(newMode); // update UI immediately
+
+        const { error } = await supabase
+            .from("lcd_settings")
+            .upsert({
+                user_id: userId,
+                device_id: "ShelfESP32_1",  // or whatever your device id is
+                unit_mode: newMode,
+            });
+
+        if (error) {
+            console.error("Error updating LCD unit mode:", error);
+            addToast("Failed to toggle LCD units", "error");
+            // optional: revert state if you want strict consistency
+            // setLcdUnit(prev => prev === "g" ? "oz" : "g");
+        } else {
+            addToast(`LCD units set to ${newMode === "g" ? "grams" : "ounces"}`, "success");
+        }
+    };
+
+
 
     return (
         <div className="dashboard-container">
@@ -133,6 +159,13 @@ export default function Dashboard({ session, navigate }) {
                     <p className="user-info">Signed in as: <b>{session.user.email}</b></p>
                 </div>
                 <div className="header-buttons">
+                    <button
+                        className="unit-toggle-btn"
+                        onClick={handleToggleLCDUnits}
+                        title="Toggle LCD units between grams and ounces"
+                        >
+                        LCD Units: {lcdUnit === "g" ? "Grams" : "Ounces"}
+                    </button>
                     <button className="sign-out-btn" onClick={() => navigate("consumption")}>
                         Macro Tracking
                     </button>
@@ -144,6 +177,8 @@ export default function Dashboard({ session, navigate }) {
                     </button>
                 </div>
             </div>
+
+
 
             {/* Main Content */}
             <div className="dashboard-content">
@@ -189,37 +224,47 @@ export default function Dashboard({ session, navigate }) {
                 {/* Containers with nested items */}
                 <div className="shelf-section">
                     <h2 className="section-title">Your Containers</h2>
-                    
+
                     {containers.length > 0 ? (
                         <div className="containers-with-items">
                             {containers.map((container) => {
-                                const containerItems = shelfItems.filter(item => item.container_id === container.id);
+                                const containerItems = shelfItems.filter(
+                                    (item) => item.container_id === container.id
+                                );
+
                                 return (
                                     <div key={container.id} className="container-with-items">
                                         <div className="container-header-expanded">
                                             <div className="container-title-info">
                                                 <h3>{container.name}</h3>
                                                 <div className="container-meta">
+                                <span className="meta-item">
+                                    {container.empty_weight
+                                        ? `${container.empty_weight}g empty weight`
+                                        : "Using scale"}
+                                </span>
                                                     <span className="meta-item">
-                                                        {container.empty_weight 
-                                                            ? `${container.empty_weight}g empty weight` 
-                                                            : 'Using scale'}
-                                                    </span>
-                                                    <span className="meta-item">
-                                                        {containerItems.length} item{containerItems.length !== 1 ? 's' : ''}
-                                                    </span>
+                                    {containerItems.length} item
+                                                        {containerItems.length !== 1 ? "s" : ""}
+                                </span>
                                                 </div>
                                             </div>
-                                            <button 
+
+                                            <button
                                                 className="delete-btn"
-                                                onClick={() => handleDeleteContainer(container.id)}
+                                                onClick={() =>
+                                                    handleDeleteContainer(container.id)
+                                                }
                                                 title="Delete container"
                                             >
                                                 ✕
                                             </button>
-                                            <button 
+
+                                            <button
                                                 className="add-item-btn"
-                                                onClick={() => handleAddItemToContainer(container.id)}
+                                                onClick={() =>
+                                                    handleAddItemToContainer(container.id)
+                                                }
                                                 title="Add item to this container"
                                             >
                                                 + Add Item
@@ -229,45 +274,106 @@ export default function Dashboard({ session, navigate }) {
                                         {/* Items in this container */}
                                         <div className="container-items-grid">
                                             {containerItems.length > 0 ? (
-                                                containerItems.map((item) => (
-                                                    <div key={item.id} className="shelf-card">
-                                                        <div className="shelf-card-header">
-                                                            <h3>{item.food_name || item.name}</h3>
-                                                            <div className="shelf-card-actions">
-                                                                <button 
-                                                                    className="edit-btn"
-                                                                    onClick={() => handleEditItem(item)}
-                                                                    title="Edit item"
-                                                                >
-                                                                    ✎
-                                                                </button>
-                                                                <button 
-                                                                    className="delete-btn"
-                                                                    onClick={() => handleDeleteItem(item.id)}
-                                                                    title="Delete item"
-                                                                >
-                                                                    ✕
-                                                                </button>
+                                                containerItems.map((item) => {
+                                                    const emptyWeight =
+                                                        container.empty_weight ?? 0;
+
+                                                    const rawCurrent =
+                                                        item.current_weight ?? 0;
+                                                    const rawMax = item.max_weight ?? 0;
+
+                                                    // Food-only weight calculations
+                                                    const netCurrentWeight = Math.max(
+                                                        rawCurrent - emptyWeight,
+                                                        0
+                                                    );
+                                                    const netMaxWeight = Math.max(
+                                                        rawMax - emptyWeight,
+                                                        0
+                                                    );
+
+                                                    const fillPercent =
+                                                        netMaxWeight > 0
+                                                            ? (netCurrentWeight /
+                                                                netMaxWeight) *
+                                                            100
+                                                            : 0;
+
+                                                    const calories =
+                                                        (item.calories_per_gram ?? 0) *
+                                                        netCurrentWeight;
+
+                                                    return (
+                                                        <div
+                                                            key={item.id}
+                                                            className="shelf-card"
+                                                        >
+                                                            <div className="shelf-card-header">
+                                                                <h3>
+                                                                    {item.food_name ||
+                                                                        item.name}
+                                                                </h3>
+                                                                <div className="shelf-card-actions">
+                                                                    <button
+                                                                        className="edit-btn"
+                                                                        onClick={() =>
+                                                                            handleEditItem(
+                                                                                item
+                                                                            )
+                                                                        }
+                                                                        title="Edit item"
+                                                                    >
+                                                                        ✎
+                                                                    </button>
+                                                                    <button
+                                                                        className="delete-btn"
+                                                                        onClick={() =>
+                                                                            handleDeleteItem(
+                                                                                item.id
+                                                                            )
+                                                                        }
+                                                                        title="Delete item"
+                                                                    >
+                                                                        ✕
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="shelf-card-body">
+                                                                <p className="item-detail">
+                                                <span className="detail-label">
+                                                    Weight:
+                                                </span>{" "}
+                                                                    {netCurrentWeight.toFixed(
+                                                                        1
+                                                                    )}{" "}
+                                                                    /{" "}
+                                                                    {netMaxWeight.toFixed(1)} g
+                                                                </p>
+
+                                                                <div className="weight-bar">
+                                                                    <div
+                                                                        className="weight-fill"
+                                                                        style={{
+                                                                            width: `${fillPercent}%`,
+                                                                        }}
+                                                                    ></div>
+                                                                </div>
+
+                                                                <p className="item-detail">
+                                                <span className="detail-label">
+                                                    Calories:
+                                                </span>{" "}
+                                                                    {calories.toFixed(1)} kcal
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <div className="shelf-card-body">
-                                                            <p className="item-detail">
-                                                                <span className="detail-label">Weight:</span> {item.current_weight} / {item.max_weight} g
-                                                            </p>
-                                                            <div className="weight-bar">
-                                                                <div 
-                                                                    className="weight-fill"
-                                                                    style={{width: `${(item.current_weight / item.max_weight * 100) || 0}%`}}
-                                                                ></div>
-                                                            </div>
-                                                            <p className="item-detail">
-                                                                <span className="detail-label">Calories:</span> {(item.current_weight * item.calories_per_gram).toFixed(1)} kcal
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))
+                                                    );
+                                                })
                                             ) : (
-                                                <p className="container-empty-message">No items in this container yet</p>
+                                                <p className="container-empty-message">
+                                                    No items in this container yet
+                                                </p>
                                             )}
                                         </div>
                                     </div>
@@ -278,9 +384,12 @@ export default function Dashboard({ session, navigate }) {
                         <div className="empty-state">
                             <div className="empty-state-icon">—</div>
                             <p className="empty-state-message">No containers yet</p>
-                            <p className="empty-state-submessage">Click "Add Container" to get started</p>
+                            <p className="empty-state-submessage">
+                                Click "Add Container" to get started
+                            </p>
                         </div>
                     )}
+
                 </div>
             </div>
         </div>

@@ -831,3 +831,38 @@
     padding: 4px 10px;
   }
 }
+
+.unit-toggle-btn {
+    background: linear-gradient(135deg, #6BA8FF 0%, #4A7BFF 50%, #3A63D7 100%);
+    border: 2px solid rgba(74, 123, 255, 0.3);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(74, 123, 255, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.unit-toggle-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.unit-toggle-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(74, 123, 255, 0.6), 0 0 20px rgba(74, 123, 255, 0.2);
+    background: linear-gradient(135deg, #4A7BFF 0%, #3F6DE0 50%, #355BC5 100%);
+}
+
+.unit-toggle-btn:hover::before {
+    opacity: 1;
+}
+
