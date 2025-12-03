@@ -111,7 +111,7 @@ export default function EditFoodModal({ isOpen, onClose, item, userId, onAdded }
 
 
         try {
-            await supabase.from("shelf_items").update({
+            const { error } = await supabase.from("shelf_items").update({
                 food_name: name.trim(),
                 serving_size_grams: servingSizeNum,
 
@@ -128,6 +128,10 @@ export default function EditFoodModal({ isOpen, onClose, item, userId, onAdded }
                 current_weight: currentWeightNum,
                 max_weight: maxWeightNum,
             }).eq("id", item.id).eq("user_id", userId);
+
+            if (error) {
+                throw error;
+            }
 
             addToast(`"${name}" updated successfully!`, "success");
         }

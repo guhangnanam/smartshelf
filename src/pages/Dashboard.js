@@ -70,8 +70,12 @@ export default function Dashboard({ session, navigate }) {
 
     // Initialize data on component mount
     useEffect(() => {
-        fetchShelfItems();
-        fetchContainers();
+        const loadData = async () => {
+            await fetchShelfItems();
+            await fetchContainers();
+        };
+        
+        loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -303,10 +307,12 @@ export default function Dashboard({ session, navigate }) {
                                                         (item.calories_per_gram ?? 0) *
                                                         netCurrentWeight;
 
+                                                    const isLowInventory = fillPercent <= 20;
+
                                                     return (
                                                         <div
                                                             key={item.id}
-                                                            className="shelf-card"
+                                                            className={`shelf-card ${isLowInventory ? "low-inventory" : ""}`}
                                                         >
                                                             <div className="shelf-card-header">
                                                                 <h3>
